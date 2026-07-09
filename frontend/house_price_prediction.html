@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>House Price Predictor</title>
+<style>
+  :root{
+    --orange: #ff8c1a;
+    --orange-dark: #e5720a;
+    --bg-light-orange: #fff4e8;
+    --card-bg: #ffffff;
+    --text-dark: #3a2a1a;
+    --text-muted: #8a7360;
+  }
+
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+  }
+
+  body{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: var(--bg-light-orange);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header{
+    background-color: #ffffff;
+    padding: 16px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom: 5px solid var(--orange);
+  }
+
+  .header-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .house-icon{
+    width:32px;
+    height:32px;
+    fill: var(--orange);
+  }
+
+  .brand-name{
+    font-size:20px;
+    font-weight:700;
+    color: var(--text-dark);
+  }
+
+  .header-right{
+    position: relative;
+  }
+
+  .menu-icon{
+    width:30px;
+    height:22px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    cursor:pointer;
+  }
+
+  .menu-icon span{
+    height:4px;
+    width:100%;
+    background-color: var(--orange);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .menu-icon.open span:nth-child(1){
+    transform: translateY(9px) rotate(45deg);
+  }
+  .menu-icon.open span:nth-child(2){
+    opacity: 0;
+  }
+  .menu-icon.open span:nth-child(3){
+    transform: translateY(-9px) rotate(-45deg);
+  }
+
+  .nav-dropdown{
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: #ffffff;
+    border: 1.5px solid #f0d9bf;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(255, 140, 26, 0.18);
+    min-width: 160px;
+    overflow: hidden;
+    display: none;
+    z-index: 10;
+  }
+
+  .nav-dropdown.show{
+    display: block;
+  }
+
+  .nav-dropdown a{
+    display:block;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-decoration: none;
+    cursor:pointer;
+  }
+
+  .nav-dropdown a:hover{
+    background-color: var(--bg-light-orange);
+    color: var(--orange-dark);
+  }
+
+  .nav-dropdown a + a{
+    border-top: 1px solid #f5e6d3;
+  }
+
+  /* MAIN */
+  main{
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding: 60px 20px;
+  }
+
+  .form-card{
+    background-color: var(--card-bg);
+    width: 400px;
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(255, 140, 26, 0.15);
+    padding: 40px 32px;
+    border-top: 4px solid var(--orange);
+  }
+
+  .form-card h1{
+    font-size: 22px;
+    text-align:center;
+    margin-bottom: 6px;
+    color: var(--text-dark);
+  }
+
+  .form-card p.subtitle{
+    text-align:center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  .form-group{
+    margin-bottom: 22px;
+  }
+
+  .form-group label{
+    display:block;
+    font-size: 14px;
+    font-weight:600;
+    margin-bottom: 8px;
+    color: var(--text-dark);
+  }
+
+  .form-group select,
+  .form-group input{
+    width:100%;
+    padding: 12px 14px;
+    border: 1.5px solid #f0d9bf;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #fffaf4;
+    color: var(--text-dark);
+    outline:none;
+    transition: border-color 0.2s ease;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus{
+    border-color: var(--orange);
+  }
+
+  .predict-btn{
+    width:100%;
+    padding: 14px;
+    background-color: var(--orange);
+    color:#fff;
+    border:none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top: 10px;
+    transition: background-color 0.2s ease;
+  }
+
+  .predict-btn:hover{
+    background-color: var(--orange-dark);
+  }
+
+  .result-box{
+    margin-top: 24px;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #fff1e0;
+    border: 1.5px dashed var(--orange);
+    text-align:center;
+    display:none;
+  }
+
+  .result-box.show{
+    display:block;
+  }
+
+  .result-box .price{
+    font-size: 24px;
+    font-weight:700;
+    color: var(--orange-dark);
+    margin-top: 4px;
+  }
+
+  .error-text{
+    color: #c0392b;
+    font-size: 12px;
+    margin-top: 6px;
+    display:none;
+  }
+
+  .error-text.show{
+    display:block;
+  }
+
+  .about-content p{
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+  }
+
+  .about-content p:last-child{
+    margin-bottom: 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <svg class="house-icon" viewBox="0 0 24 24">
+      <path d="M12 2L2 9.5V22h6v-7h8v7h6V9.5L12 2z"/>
+    </svg>
+    <span class="brand-name">HomeValue</span>
+  </div>
+  <div class="header-right">
+    <div class="menu-icon" id="menuIcon">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="nav-dropdown" id="navDropdown">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('about')">About Us</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HOME PAGE -->
+  <div class="form-card" id="homePage">
+    <h1>Predict House Price</h1>
+    <p class="subtitle">Enter the details below to get an estimated price</p>
+
+    <form id="predictForm">
+      <div class="form-group">
+        <label for="location">Location</label>
+        <select id="location">
+          <option value="" disabled selected>Select a location</option>
+          <option value="Lucknow">Lucknow</option>
+          <option value="Mumbai">Mumbai</option>
+          <option value="Delhi">Delhi</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="area">Area (in sq. ft.)</label>
+        <input type="number" id="area" placeholder="e.g. 1200" min="1">
+        <div class="error-text" id="areaError">Please enter a valid area</div>
+      </div>
+
+      <button type="button" id="predictBtn" class="predict-btn">Predict House Price</button>
+    </form>
+
+    <div class="result-box" id="resultBox">
+      <div>Estimated Price</div>
+      <div class="price" id="priceOutput">₹0</div>
+    </div>
+  </div>
+
+  <!-- ABOUT US PAGE -->
+  <div class="form-card" id="aboutPage" style="display:none;">
+    <h1>About Us</h1>
+    <p class="subtitle">Getting to know this project</p>
+
+    <div class="about-content">
+      <p>This House Price Prediction project was created purely for the <strong>purpose of learning</strong>.</p>
+      <p>It was built as a hands-on exercise to understand how machine learning models work end-to-end &mdash; from writing the prediction logic by hand, to designing a simple frontend that takes user inputs (location and area) and displays an estimated price.</p>
+      <p>The goal of this project is educational: to practice core machine learning concepts, frontend design, and how the two connect together, rather than to serve as a production-ready or commercially accurate price estimator.</p>
+    </div>
+  </div>
+</main>
+
+<script src="script.js"></script>
+
+</body>
+</html>
