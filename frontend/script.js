@@ -1,4 +1,4 @@
-const API_URL="http://127.0.0.1:8000/predict";
+const API_URL="https://house-price-prediction-2j3x.onrender.com/predict";
 
 //Element Refrences
 const resultBox=document.getElementById('resultBox');
